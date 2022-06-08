@@ -2,10 +2,10 @@ const users = require("./users");
 const mysql = require('mysql')
 
 const con = mysql.createConnection({
-    host: "34.124.138.183",
-    user: "frost",
+    host: "34.143.189.163",
+    user: "jagain",
     password: "12345",
-    database: "bangkit"
+    database: "db_jagain"
 })
 
 con.connect(function (err) {
@@ -104,7 +104,15 @@ const loginHandler = async (request, h) => {
 const showAllUsers = async (_, h) => {
     return new Promise((resolve, reject) => {
         con.query('SELECT * FROM Users', function (err, data) {
-            if (err) return reject(error)
+            if (err) {
+                const a = err.message
+                const response = h.response({
+                    status: "fail",
+                    message: a,
+                })
+                response.code(400)
+                return resolve(response)
+            }
 
             if (data.length > 0) {
                 const response = h.response({
