@@ -1,4 +1,4 @@
-const { registerHandler, loginHandler, getUserByIdHandler, showAllUsers } = require('./handler');
+const { registerHandler, loginHandler, getUserByIdHandler, showAllUsers, tesMLHandler } = require('./handler');
 
 const routes = [
     {
@@ -21,6 +21,11 @@ const routes = [
         path: '/users',
         handler: showAllUsers,
     },
+    {
+        method: 'GET',
+        path:'/tesML',
+        handler: tesMLHandler
+    }
 ]
 
-module.exports =  routes;
+module.exports = routes;
