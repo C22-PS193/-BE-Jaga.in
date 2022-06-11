@@ -40,7 +40,7 @@ const routes = [
     },
     {
         method: 'GET',
-        path: '/scheduler/{username}',
+        path: '/scheduler/{userid}',
         handler: getScheduleHandler,
     },
     {

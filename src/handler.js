@@ -302,10 +302,10 @@ const verifyKTPHandler = async (request, h) => {
 }
 
 const getScheduleHandler = async (request, h) => {
-    const { username } = request.params.username;
+    const { userid } = request.params.userid;
 
     return new Promise((resolve, _) => {
-        con.query('SELECT * FROM Schedules WHERE username = ?', [username], function (err, results) {
+        con.query('SELECT * FROM Schedules WHERE userId = ?', [userid], function (err, results) {
             if (err) {
                 const response = h.response({
                     status: "fail",
@@ -344,7 +344,7 @@ const getScheduleByIdHandler = async (request, h) => {
     if(date == null){
         if(date != ""){
             return new   Promise((resolve, _) => {
-                con.query('SELECT * FROM Schedules WHERE username = ? AND sitterid = ? AND date = ?', [pk[0], pk[1], date], function (err, results) {
+                con.query('SELECT * FROM Schedules WHERE userId = ? AND sitterId = ? AND date = ?', [pk[0], pk[1], date], function (err, results) {
                     if (err) {
                         const response = h.response({
                             status: "fail",
@@ -377,7 +377,7 @@ const getScheduleByIdHandler = async (request, h) => {
     }
     
     return new   Promise((resolve, _) => {
-        con.query('SELECT * FROM Schedules WHERE username = ? AND sitterid = ?', [pk[0], pk[1]], function (err, results) {
+        con.query('SELECT * FROM Schedules WHERE userId = ? AND sitterId = ?', [pk[0], pk[1]], function (err, results) {
             if (err) {
                 const response = h.response({
                     status: "fail",
@@ -410,11 +410,11 @@ const getScheduleByIdHandler = async (request, h) => {
 
 
 const createScheduleHandler = async (request, h) => {
-    const { username, sitterid, date } = request.payload;
+    const { userid, sitterid, date } = request.payload;
 
-    if (username != null && sitterid != null && date != null) {
+    if (userid != null && sitterid != null && date != null) {
         return new Promise((resolve, _) => {
-            con.query('SELECT * FROM Schedules WHERE username = ? AND sitterid = ? AND date = ?', [username, sitterid, date], function (err, results) {
+            con.query('SELECT * FROM Schedules WHERE userId = ? AND sitterId = ? AND date = ?', [userid, sitterid, date], function (err, results) {
                 if (err) {
                     const response = h.response({
                         status: "fail",
@@ -433,7 +433,7 @@ const createScheduleHandler = async (request, h) => {
                     return resolve(response);
                 }
 
-                con.query('INSERT INTO Schedules (username,sitterid,date) VALUES ("' + username + '","' + sitterid + '","' + date + '")', function (err, results) {
+                con.query('INSERT INTO Schedules (userId,sitterId,date) VALUES ("' + userid + '","' + sitterid + '","' + date + '")', function (err, results) {
                     if (err) {
                         const response = h.response({
                             status: "fail",
@@ -461,11 +461,11 @@ const createScheduleHandler = async (request, h) => {
 };
 
 const deleteScheduleHandler = async (request, h) => {
-    const { username, sitterid, date } = request.payload;
+    const { userid, sitterid, date } = request.payload;
 
-    if (username != null && sitterid != null && date != null) {
+    if (userid != null && sitterid != null && date != null) {
         return new Promise((resolve, _) => {
-            con.query('SELECT * FROM Schedules WHERE username = ? AND sitterid = ? AND date = ?', [username, sitterid, date], function (err, results) {
+            con.query('SELECT * FROM Schedules WHERE userId = ? AND sitterId = ? AND date = ?', [userid, sitterid, date], function (err, results) {
                 if (err) {
                     const response = h.response({
                         status: "fail",
@@ -484,7 +484,7 @@ const deleteScheduleHandler = async (request, h) => {
                     return resolve(response);
                 }
 
-                con.query('DELETE FROM Schedules WHERE username = ? AND sitterid = ? AND date = ?', [username, sitterid, date], function (err, results) {
+                con.query('DELETE FROM Schedules WHERE userId = ? AND sitterId = ? AND date = ?', [userid, sitterid, date], function (err, results) {
                     if (err) {
                         const response = h.response({
                             status: "fail",
@@ -507,7 +507,7 @@ const deleteScheduleHandler = async (request, h) => {
     }
     return h.response({
         status: "fail",
-        message: "Username/SitterID/Date tidak boleh kosong!"
+        message: "UserID/SitterID/Date tidak boleh kosong!"
     }).code(400)
 };
 module.exports = { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler, getScheduleHandler, getScheduleByIdHandler, createScheduleHandler, deleteScheduleHandler };
