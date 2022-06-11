@@ -305,7 +305,7 @@ const getScheduleHandler = async (request, h) => {
     const { username } = request.params.username;
 
     return new Promise((resolve, _) => {
-        con.query('SELECT * FROM Schedule WHERE username = ?', [username], function (err, results) {
+        con.query('SELECT * FROM Schedules WHERE username = ?', [username], function (err, results) {
             if (err) {
                 const response = h.response({
                     status: "fail",
