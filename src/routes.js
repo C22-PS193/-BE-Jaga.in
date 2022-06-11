@@ -1,4 +1,4 @@
-const { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler, getScheduleHandler, getScheduleByIdHandler} = require('./handler');
+const { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler, getScheduleHandler, getScheduleByIdHandler, createScheduleHandler, deleteScheduleHandler} = require('./handler');
 
 const routes = [
     {
@@ -47,6 +47,16 @@ const routes = [
         method: 'GET',
         path: '/scheduler/{pk*2}',
         handler: getScheduleByIdHandler,
+    },
+    {
+        method: 'POST',
+        path: '/scheduler',
+        handler: createScheduleHandler,
+    },
+    {
+        method: 'POST',
+        path: '/scheduler/delete',
+        handler: deleteScheduleHandler,
     },
 ]
 

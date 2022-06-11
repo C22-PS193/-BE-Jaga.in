@@ -344,7 +344,7 @@ const getScheduleByIdHandler = async (request, h) => {
     if(date == null){
         if(date != ""){
             return new   Promise((resolve, _) => {
-                con.query('SELECT * FROM Schedule WHERE username = ? AND sitterid = ? AND date = ?', [pk[0], pk[1], date], function (err, results) {
+                con.query('SELECT * FROM Schedules WHERE username = ? AND sitterid = ? AND date = ?', [pk[0], pk[1], date], function (err, results) {
                     if (err) {
                         const response = h.response({
                             status: "fail",
@@ -377,7 +377,7 @@ const getScheduleByIdHandler = async (request, h) => {
     }
     
     return new   Promise((resolve, _) => {
-        con.query('SELECT * FROM Schedule WHERE username = ? AND sitterid = ?', [pk[0], pk[1]], function (err, results) {
+        con.query('SELECT * FROM Schedules WHERE username = ? AND sitterid = ?', [pk[0], pk[1]], function (err, results) {
             if (err) {
                 const response = h.response({
                     status: "fail",
@@ -408,4 +408,106 @@ const getScheduleByIdHandler = async (request, h) => {
     });
 };
 
-module.exports = { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler, getScheduleHandler, getScheduleByIdHandler };
+
+const createScheduleHandler = async (request, h) => {
+    const { username, sitterid, date } = request.payload;
+
+    if (username != null && sitterid != null && date != null) {
+        return new Promise((resolve, _) => {
+            con.query('SELECT * FROM Schedules WHERE username = ? AND sitterid = ? AND date = ?', [username, sitterid, date], function (err, results) {
+                if (err) {
+                    const response = h.response({
+                        status: "fail",
+                        message: "Terjadi kesalahan"
+                    })
+                    response.code(400)
+                    return resolve(response)
+                }
+
+                if (results.length > 0) {
+                    const response = h.response({
+                        status: "Fail",
+                        message: "Schedule sudah ada"
+                    })
+                    response.code(409)
+                    return resolve(response);
+                }
+
+                con.query('INSERT INTO Schedules (username,sitterid,date) VALUES ("' + username + '","' + sitterid + '","' + date + '")', function (err, results) {
+                    if (err) {
+                        const response = h.response({
+                            status: "fail",
+                            message: "Terjadi kesalahan"
+                        })
+                        response.code(400)
+                        return resolve(response)
+                    }
+
+                    const response = h.response({
+                        status: "success",
+                        message: "Schedule berhasil dibuat"
+                    })
+                    response.code(201)
+                    return resolve(response);
+                });
+            })
+
+        })
+    }
+    return h.response({
+        status: "fail",
+        message: "Username/SitterID/Date tidak boleh kosong!"
+    }).code(400)
+};
+
+const deleteScheduleHandler = async (request, h) => {
+    const { username, sitterid, date } = request.payload;
+
+    if (username != null && sitterid != null && date != null) {
+        return new Promise((resolve, _) => {
+            con.query('SELECT * FROM Schedules WHERE username = ? AND sitterid = ? AND date = ?', [username, sitterid, date], function (err, results) {
+                if (err) {
+                    const response = h.response({
+                        status: "fail",
+                        message: "Terjadi kesalahan"
+                    })
+                    response.code(400)
+                    return resolve(response)
+                }
+
+                if (results.length = 0) {
+                    const response = h.response({
+                        status: "Fail",
+                        message: "Schedule tidak ada"
+                    })
+                    response.code(409)
+                    return resolve(response);
+                }
+
+                con.query('DELETE FROM Schedules WHERE username = ? AND sitterid = ? AND date = ?', [username, sitterid, date], function (err, results) {
+                    if (err) {
+                        const response = h.response({
+                            status: "fail",
+                            message: "Terjadi kesalahan"
+                        })
+                        response.code(400)
+                        return resolve(response)
+                    }
+
+                    const response = h.response({
+                        status: "success",
+                        message: "Schedule berhasil dihapus"
+                    })
+                    response.code(201)
+                    return resolve(response);
+                });
+            })
+
+        })
+    }
+    return h.response({
+        status: "fail",
+        message: "Username/SitterID/Date tidak boleh kosong!"
+    }).code(400)
+};
+module.exports = { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler, getScheduleHandler, getScheduleByIdHandler, createScheduleHandler, deleteScheduleHandler };
