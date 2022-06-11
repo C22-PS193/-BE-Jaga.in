@@ -1,4 +1,4 @@
-const { registerHandler, loginHandler, getUserByIdHandler, showAllUsers, tesMLHandler } = require('./handler');
+const { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler } = require('./handler');
 
 const routes = [
     {
@@ -17,15 +17,27 @@ const routes = [
         handler: getUserByIdHandler
     },
     {
-        method: 'GET',
-        path: '/users',
-        handler: showAllUsers,
+        method: 'POST',
+        path: '/verifyKTP',
+        config: {
+            payload: {
+                parse: true,
+                allow: 'multipart/form-data',
+                multipart: { output: 'stream' },
+            }
+        },
+        handler: verifyKTPHandler,
+    },
+    {
+        method: 'POST',
+        path: '/babysitters/{id}',
+        handler: getBabySitterByIdHandler
     },
     {
         method: 'GET',
-        path:'/tesML',
-        handler: tesMLHandler
-    }
+        path: '/babysitters',
+        handler: getBabysitterHandler,
+    },
 ]
 
 module.exports = routes;
