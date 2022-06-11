@@ -302,7 +302,7 @@ const verifyKTPHandler = async (request, h) => {
 }
 
 const getScheduleHandler = async (request, h) => {
-    const { username } = request.payload;
+    const { username } = request.params.username;
 
     return new Promise((resolve, _) => {
         con.query('SELECT * FROM Schedule WHERE username = ?', [username], function (err, results) {
@@ -326,14 +326,86 @@ const getScheduleHandler = async (request, h) => {
             }
 
             const response = h.response({
-                status: "fail",
-                message: "Username atau Email dan Password Tidak Ditemukan"
+                status: "success",
+                message: "Schedule masih kosong"
             })
-            response.code(401)
+            response.code(200)
 
             return resolve(response);
         });
     })
 };
 
-module.exports = { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler, getScheduleHandler };
+
+const getScheduleByIdHandler = async (request, h) => {
+    const pk = request.params.pk.split('/');
+    const date = request.query.date;
+
+    if(date == null){
+        if(date != ""){
+            return new   Promise((resolve, _) => {
+                con.query('SELECT * FROM Schedule WHERE username = ? AND sitterid = ? AND date = ?', [pk[0], pk[1], date], function (err, results) {
+                    if (err) {
+                        const response = h.response({
+                            status: "fail",
+                            message: "Terjadi kesalahan"
+                        })
+                        response.code(400)
+                        return resolve(response)
+                    }
+
+                    if (results.length > 0) {
+                        const response = h.response({
+                            status: "success",
+                            id: results[0].id
+                        })
+                        response.code(200)
+
+                        return resolve(response);
+                    }
+
+                    const response = h.response({
+                        status: "success",
+                        message: "Schedule masih kosong"
+                    })
+                    response.code(200)
+
+                    return resolve(response);
+                });
+            });
+        }
+    }
+    
+    return new   Promise((resolve, _) => {
+        con.query('SELECT * FROM Schedule WHERE username = ? AND sitterid = ?', [pk[0], pk[1]], function (err, results) {
+            if (err) {
+                const response = h.response({
+                    status: "fail",
+                    message: "Terjadi kesalahan"
+                })
+                response.code(400)
+                return resolve(response)
+            }
+
+            if (results.length > 0) {
+                const response = h.response({
+                    status: "success",
+                    id: results[0].id
+                })
+                response.code(200)
+
+                return resolve(response);
+            }
+
+            const response = h.response({
+                status: "success",
+                message: "Schedule masih kosong"
+            })
+            response.code(200)
+
+            return resolve(response);
+        });
+    });
+};
+
+module.exports = { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler, getScheduleHandler, getScheduleByIdHandler };
