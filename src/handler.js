@@ -301,4 +301,39 @@ const verifyKTPHandler = async (request, h) => {
     }).code(200)
 }
 
-module.exports = { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler };
+const getScheduleHandler = async (request, h) => {
+    const { username } = request.payload;
+
+    return new Promise((resolve, _) => {
+        con.query('SELECT * FROM Schedule WHERE username = ?', [username], function (err, results) {
+            if (err) {
+                const response = h.response({
+                    status: "fail",
+                    message: "Terjadi kesalahan"
+                })
+                response.code(400)
+                return resolve(response)
+            }
+
+            if (results.length > 0) {
+                const response = h.response({
+                    status: "success",
+                    id: results[0].id
+                })
+                response.code(200)
+
+                return resolve(response);
+            }
+
+            const response = h.response({
+                status: "fail",
+                message: "Username atau Email dan Password Tidak Ditemukan"
+            })
+            response.code(401)
+
+            return resolve(response);
+        });
+    })
+};
+
+module.exports = { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler, getScheduleHandler };

@@ -1,4 +1,4 @@
-const { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler } = require('./handler');
+const { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler, getScheduleHandler} = require('./handler');
 
 const routes = [
     {
@@ -37,6 +37,11 @@ const routes = [
         method: 'GET',
         path: '/babysitters',
         handler: getBabysitterHandler,
+    },
+    {
+        method: 'GET',
+        path: '/scheduler',
+        handler: getScheduleHandler,
     },
 ]
 
