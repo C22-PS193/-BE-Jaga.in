@@ -228,10 +228,13 @@ const getBabySitterByIdHandler = async (request, h) => {
 const verifyKTPHandler = async (request, h) => {
     const { _data } = request.payload.image
     const { filename } = request.payload.image.hapi
+    const _data2 = request.payload.image2._data
+    const filename2 = request.payload.image2.hapi.filename
+    
     const bucket = storage.bucket("jagain-bucket")
     const blob = bucket.file(filename)
+    const blob2 = bucket.file(filename2)
 
-    console.log(filename)
     const blobStream = blob.createWriteStream({
         metadata: {
             contentType: 'image/jpg'
@@ -245,17 +248,33 @@ const verifyKTPHandler = async (request, h) => {
         // The public URL can be used to directly access the file via HTTP.
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
     })
-
     blobStream.end(_data);
 
+    const blobStream2 = blob2.createWriteStream({
+        metadata: {
+            contentType: 'image/jpg'
+        }
+    }).on("error", err => {
+        return h.response({
+            status: "success",
+            message: err
+        }).code(400)
+    }).on("finish", () => {
+        // The public URL can be used to directly access the file via HTTP.
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+    })
+
+    blobStream2.end(_data2);
+ 
     //Get Image
-    const image = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/' + filename)
-    const tensorImage = tfnode.node.decodeImage(image)
+    // const image = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/' + filename)
+    // console.log(image)
+    const tensorImage = tfnode.node.decodeImage(_data)
     // console.log(tensorImage.shape)
 
     //Get Image - 2
-    const image2 = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/abas.jpg')
-    const tensorImage2 = tfnode.node.decodeImage(image2)
+    // const image2 = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/abas.jpg')
+    const tensorImage2 = tfnode.node.decodeImage(_data2)
     // console.log(tensorImage2.shape)
 
     //Resize
@@ -290,14 +309,13 @@ const verifyKTPHandler = async (request, h) => {
     if (model.indexOf(Math.max(...model)) === model2.indexOf(Math.max(...model2))) {
         return h.response({
             status: "success",
-            message: "blogg",
             isVerified: true
         }).code(200)
     }
 
     return h.response({
         status: "success",
-        message: "Upload Success"
+        isVerified: false
     }).code(200)
 }
 

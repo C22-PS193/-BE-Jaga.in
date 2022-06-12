@@ -24,6 +24,7 @@ const routes = [
                 parse: true,
                 allow: 'multipart/form-data',
                 multipart: { output: 'stream' },
+                maxBytes: 52428800,
             }
         },
         handler: verifyKTPHandler,
