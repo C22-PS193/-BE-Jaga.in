@@ -302,7 +302,7 @@ const verifyKTPHandler = async (request, h) => {
 }
 
 const getScheduleHandler = async (request, h) => {
-    const { userid } = request.params.userid;
+    const userid = request.params.userid;
 
     return new Promise((resolve, _) => {
         con.query('SELECT * FROM Schedules WHERE userId = ?', [userid], function (err, results) {
@@ -318,7 +318,7 @@ const getScheduleHandler = async (request, h) => {
             if (results.length > 0) {
                 const response = h.response({
                     status: "success",
-                    id: results[0].id
+                    schedules: results
                 })
                 response.code(200)
 
@@ -340,8 +340,8 @@ const getScheduleHandler = async (request, h) => {
 const getScheduleByIdHandler = async (request, h) => {
     const pk = request.params.pk.split('/');
     const date = request.query.date;
-
-    if(date == null){
+console.log(pk+","+date)
+    if(date != undefined){
         if(date != ""){
             return new   Promise((resolve, _) => {
                 con.query('SELECT * FROM Schedules WHERE userId = ? AND sitterId = ? AND date = ?', [pk[0], pk[1], date], function (err, results) {
@@ -357,7 +357,7 @@ const getScheduleByIdHandler = async (request, h) => {
                     if (results.length > 0) {
                         const response = h.response({
                             status: "success",
-                            id: results[0].id
+                            schedule: results[0]
                         })
                         response.code(200)
 
@@ -390,7 +390,7 @@ const getScheduleByIdHandler = async (request, h) => {
             if (results.length > 0) {
                 const response = h.response({
                     status: "success",
-                    id: results[0].id
+                    schedules: results
                 })
                 response.code(200)
 
