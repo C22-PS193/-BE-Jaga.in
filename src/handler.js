@@ -231,6 +231,7 @@ const verifyKTPHandler = async (request, h) => {
     const bucket = storage.bucket("jagain-bucket")
     const blob = bucket.file(filename)
 
+    console.log(filename)
     const blobStream = blob.createWriteStream({
         metadata: {
             contentType: 'image/jpg'
@@ -248,13 +249,13 @@ const verifyKTPHandler = async (request, h) => {
     blobStream.end(_data);
 
     //Get Image
-    // const image = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/' + filename + ".jpeg")
-    const tensorImage = tfnode.node.decodeImage(`https://storage.googleapis.com/${bucket.name}/${blob.name}`)
+    const image = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/' + filename)
+    const tensorImage = tfnode.node.decodeImage(image)
     // console.log(tensorImage.shape)
 
     //Get Image - 2
-    // const image2 = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/' + filemuka + ".jpg")
-    const tensorImage2 = tfnode.node.decodeImage(`https://storage.googleapis.com/${bucket.name}/${blob.name}`)
+    const image2 = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/abas.jpg')
+    const tensorImage2 = tfnode.node.decodeImage(image2)
     // console.log(tensorImage2.shape)
 
     //Resize
