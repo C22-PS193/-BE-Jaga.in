@@ -243,19 +243,18 @@ const verifyKTPHandler = async (request, h) => {
     }).on("finish", () => {
         // The public URL can be used to directly access the file via HTTP.
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-
     })
 
     blobStream.end(_data);
 
     //Get Image
-    const image = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/' + filename + ".jpeg")
-    const tensorImage = tfnode.node.decodeImage(image)
+    // const image = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/' + filename + ".jpeg")
+    const tensorImage = tfnode.node.decodeImage(`https://storage.googleapis.com/${bucket.name}/${blob.name}`)
     // console.log(tensorImage.shape)
 
     //Get Image - 2
-    const image2 = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/' + filemuka + ".jpg")
-    const tensorImage2 = tfnode.node.decodeImage(image2)
+    // const image2 = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/' + filemuka + ".jpg")
+    const tensorImage2 = tfnode.node.decodeImage(`https://storage.googleapis.com/${bucket.name}/${blob.name}`)
     // console.log(tensorImage2.shape)
 
     //Resize
