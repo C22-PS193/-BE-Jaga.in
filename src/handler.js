@@ -226,97 +226,82 @@ const getBabySitterByIdHandler = async (request, h) => {
 }
 
 const verifyKTPHandler = async (request, h) => {
-    const { _data } = request.payload.image
     const { filename } = request.payload.image.hapi
-    const _data2 = request.payload.image2._data
     const filename2 = request.payload.image2.hapi.filename
-    
-    const bucket = storage.bucket("jagain-bucket")
-    const blob = bucket.file(filename)
-    const blob2 = bucket.file(filename2)
+    if (filename != "" && filename2 != "") {
+        const { _data } = request.payload.image
+        const _data2 = request.payload.image2._data
 
-    const blobStream = blob.createWriteStream({
-        metadata: {
-            contentType: 'image/jpg'
+        const bucket = storage.bucket("jagain-bucket")
+        const blob = bucket.file(filename)
+        const blob2 = bucket.file(filename2)
+
+        const blobStream = blob.createWriteStream({
+            metadata: {
+                contentType: 'image/jpg'
+            }
+        }).on("error", err => {
+            return h.response({
+                status: "success",
+                message: err
+            }).code(400)
+        }).on("finish", () => {
+            // The public URL can be used to directly access the file via HTTP.
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+        })
+        blobStream.end(_data);
+
+        const blobStream2 = blob2.createWriteStream({
+            metadata: {
+                contentType: 'image/jpg'
+            }
+        }).on("error", err => {
+            return h.response({
+                status: "success",
+                message: err
+            }).code(400)
+        }).on("finish", () => {
+            // The public URL can be used to directly access the file via HTTP.
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+        })
+
+        blobStream2.end(_data2);
+
+        const tensorImage = tfnode.node.decodeImage(_data)
+        const tensorImage2 = tfnode.node.decodeImage(_data2)
+
+
+        const resizeImage = tf.image.resizeBilinear(tensorImage, [224, 224]).div(tf.scalar(255))
+        const resizeImage2 = tf.image.resizeBilinear(tensorImage2, [224, 224]).div(tf.scalar(255))
+
+
+        const expandDimsImage = resizeImage.expandDims()
+        const expandDimsImage2 = resizeImage2.expandDims()
+
+        const model = await tf.loadLayersModel('file://model/model.json').then(function (model) {
+            return model.predict(expandDimsImage).dataSync()
+        })
+
+        const model2 = await tf.loadLayersModel('file://model/model.json').then(function (model2) {
+            return model2.predict(expandDimsImage2).dataSync()
+        })
+
+        if (model.indexOf(Math.max(...model)) === model2.indexOf(Math.max(...model2))) {
+            return h.response({
+                status: "success",
+                isVerified: true
+            }).code(200)
         }
-    }).on("error", err => {
+
         return h.response({
             status: "success",
-            message: err
-        }).code(400)
-    }).on("finish", () => {
-        // The public URL can be used to directly access the file via HTTP.
-        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-    })
-    blobStream.end(_data);
-
-    const blobStream2 = blob2.createWriteStream({
-        metadata: {
-            contentType: 'image/jpg'
-        }
-    }).on("error", err => {
-        return h.response({
-            status: "success",
-            message: err
-        }).code(400)
-    }).on("finish", () => {
-        // The public URL can be used to directly access the file via HTTP.
-        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-    })
-
-    blobStream2.end(_data2);
- 
-    //Get Image
-    // const image = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/' + filename)
-    // console.log(image)
-    const tensorImage = tfnode.node.decodeImage(_data)
-    // console.log(tensorImage.shape)
-
-    //Get Image - 2
-    // const image2 = fs.readFileSync('/Users/azri-m/desktop/Capstone/dummy-img/abas.jpg')
-    const tensorImage2 = tfnode.node.decodeImage(_data2)
-    // console.log(tensorImage2.shape)
-
-    //Resize
-    const resizeImage = tf.image.resizeBilinear(tensorImage, [224, 224]).div(tf.scalar(255))
-    // console.log(resizeImage.shape)
-
-    //Resize - 2
-    const resizeImage2 = tf.image.resizeBilinear(tensorImage2, [224, 224]).div(tf.scalar(255))
-    // console.log(resizeImage2.shape)
-
-    //ExpandDims
-    const expandDimsImage = resizeImage.expandDims()
-    // console.log(expandDimsImage.shape)
-
-    //ExpandDims - 2
-    const expandDimsImage2 = resizeImage2.expandDims()
-    // console.log(expandDimsImage2.shape)
-
-    // const handler = tfnode.io.fileSystem("./model.json");
-    const model = await tf.loadLayersModel('file://model/model.json').then(function (model) {
-        return model.predict(expandDimsImage).dataSync()
-    })
-
-    // const handler = tfnode.io.fileSystem("./model.json") Ke - 2
-    const model2 = await tf.loadLayersModel('file://model/model.json').then(function (model2) {
-        return model2.predict(expandDimsImage2).dataSync()
-    })
-
-    // console.log(model)
-    // console.log(model2)
-
-    if (model.indexOf(Math.max(...model)) === model2.indexOf(Math.max(...model2))) {
-        return h.response({
-            status: "success",
-            isVerified: true
+            isVerified: false
         }).code(200)
     }
-
     return h.response({
         status: "success",
-        isVerified: false
-    }).code(200)
+        message: "Harus 2 foto yang diupload"
+    }).code(400)
 }
 
 module.exports = { registerHandler, loginHandler, getUserByIdHandler, verifyKTPHandler, getBabysitterHandler, getBabySitterByIdHandler };
